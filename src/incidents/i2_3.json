@@ -1,0 +1,30 @@
+{
+    "label":"#2",
+    "name":"Incident2",
+    "description":"Something blablabla",
+    "created":"10 Feb 2021 09:30:14",
+    "opened":"10 Feb 2021 10:50:25",
+    "closed": "1 Mar 2021 12:54:00",
+    "times": [
+      {
+        "status":"new",
+        "priority":4,
+        "owner":"Abby",
+        "starting_time":"10 Feb 2021 10:50:25",
+        "ending_time":"10 Feb 2021 17:36:04"
+      },
+      {
+        "status":"active",
+        "priority":2,
+        "owner":"John",
+        "starting_time":"10 Feb 2021 17:50:14",
+        "ending_time":"11 Feb 2021 18:20:31"
+      },
+      {
+        "status":"onhold",
+        "priority":2,
+        "owner":"John",
+        "starting_time":"11 Feb 2021 19:00:04"
+      }
+    ]
+  }
