@@ -106,7 +106,7 @@ class Component3 extends Component {
                         name = "end";
                         text.innerHTML = "<b>" + name + ": </b>" + format(new Date(e[obj]));
                         break;
-                    // don't show the color and x 
+                    // don't show the color and x and name
                     case "color":
                         break;
                     case "x":
@@ -114,7 +114,7 @@ class Component3 extends Component {
                     case "name":
                         break;
                     default:
-                        // if there is list of items
+                        // list of items
                         if (Array.isArray(e[obj])) {
                             text.innerHTML = "<b>" + name + ": </b>";
                             e[obj].forEach(o => {
@@ -123,11 +123,13 @@ class Component3 extends Component {
                             text.append(list);
                             break;
                         }
+                        // custom time format
                         let timePattern = /Time/;
                         if (timePattern.test(name)) {
                             text.innerHTML = "<b>" + name + ": </b>" + format(new Date(e[obj]));
                             break;
                         } 
+                        // render image
                         let imagePattern = /Image/;
                         if ((imagePattern.test(name)) || (name === "graph")) {
                             text.innerHTML = "<b>" + name + ": </b>";
@@ -158,7 +160,7 @@ class Component3 extends Component {
             .attr("id", "prevBtn")
             .style("visibility", "hidden")
             .on("click", function () {
-                 if (firstRenderedState + statesOnPage > allStates) {
+                if (firstRenderedState + statesOnPage > allStates) {
                     lastRenderedState = allStates;
                 }
                 else {

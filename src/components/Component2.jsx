@@ -66,6 +66,9 @@ class Component1_2 extends Component {
         let stateHeight = 20;
         let height = 500;
 
+        /**
+         * Props are not defined, pre-defined values are set. 
+         */
         if (typeof this.props.property != "undefined") {
             properties = this.props.property;
         }
@@ -89,10 +92,10 @@ class Component1_2 extends Component {
         if (typeof properties.state_height != "undefined") {
             height = properties.svg_height;
         }
+
         /**
          * Using d3-timelines library to draw the chart and defining svg.
          */
-        
         let width = this.state.width; 
         let chart = timelines();
         $(".component2").css("max-height", height)
@@ -228,7 +231,7 @@ class Component1_2 extends Component {
         });
     
         let help = [];
-        // sort from actula to old
+        // sort from actual to old
         for (let i = 0; i < pomArrS.length; i++) {
             let s = pomArrS[i];
             if (typeof data[s].resolved != "undefined") {
@@ -239,7 +242,6 @@ class Component1_2 extends Component {
             if (typeof data[e].resolved != "undefined") {
                 pomArrE.push(e);
                 help.unshift(pomArrE.indexOf(e));
-                //pomArrE.splice(pomArrE.indexOf(e), 1);
             }
         };
         help.forEach(h => {
@@ -397,7 +399,6 @@ class Component1_2 extends Component {
                 d3.select("#root4").style("visibility", "hidden");
                 onclick1Incident++;
                 if ((data.length == 1) && (onclick1Incident > 1) ) {
-                    console.log("--1--")
                     renderIntoDocument(<Component3 incident={data[id]} description={description} property={properties} clickedState={index}></Component3>);
                 } else {
                     onclickData = data;
@@ -419,7 +420,6 @@ class Component1_2 extends Component {
                         .duration(200)  
                         .style("opacity", 0); 
 
-                    // save data for scaling TODO
                     resizeData = data;
                     origBegEnd = changeBegEnd(data);
                     actBegEnd = changeBegEnd(data);
@@ -437,6 +437,11 @@ class Component1_2 extends Component {
                     d3.select(".component3").style("visibility", "visible");
                     d3.select("#filterBtn").style("opacity", 0);
                     d3.select("#recoveryBtn").style("opacity", 0);
+
+                    d3.select(".fa-search-minus").style("opacity", 0.4);
+                    d3.select(".fa-redo").style("opacity", 0.4);
+                    d3.select(".fa-chevron-circle-left").style("opacity", 0.4);
+                    d3.select(".fa-chevron-circle-right").style("opacity", 0.4);
             }})
 
             /**
@@ -447,7 +452,6 @@ class Component1_2 extends Component {
             let datum = d3.timeFormat("%d/%m");
             let days = (end - beg) / day;
             let interval = 1;
-            //console.log(window.innerWidth)
             if (window.innerWidth <= 900) interval = 2;
             if (window.innerWidth <= 600) interval = 3;
             if (days <= 1) {
@@ -616,7 +620,7 @@ class Component1_2 extends Component {
                 result = false;
             }
             
-            // dont show incident when there is no data for voz time
+            // dont show incident when there is no data for viz time
             data.forEach(d => {
                 if (d.times[d.times.length -1].ending_time < BegEnd.start) {
                     data.splice(data.indexOf(d) );
@@ -626,8 +630,6 @@ class Component1_2 extends Component {
             redrawChart(chart);
             resizeData = data;
             origBegEnd = Object.assign(origBegEnd, BegEnd)
-            //origBegEnd = changeBegEnd(data);
-            // icons viz. 
             let checkIcons = [];
             data.forEach(d => {
                 let label = parseInt(d.label.split("#").join(""));
@@ -643,7 +645,6 @@ class Component1_2 extends Component {
             childNode.forEach(e => {
                 e.childNodes.forEach(v => {
                     if (v.nodeName === "text") {
-                        //console.log(v.textContent);
                         if (v.textContent == "") {
                             d3.select(e).attr("opacity", 0);
                         }
@@ -663,20 +664,17 @@ class Component1_2 extends Component {
             let counter = 0;
             let i = 0;
             data.forEach(d => {
-                //console.log(id);
                 if (d.label == ("#" + id)) {
                     where = ".timelineSeries_" + i;
                     counter++;
                 }
                 i++;
             });
-            //console.log(where);
             if (counter > 0) {
                 let y = svg.select(where).attr("y");
                 d3.select("#iconDiv"+id)
                     .style("top", (parseInt(y) + 2) + "px")
-                    .style("left", document.getElementById("svg-container").clientWidth-60 + "px")
-                    //.style("left", document.getElementsByClassName("component2")[0].clientWidth-60 + "px")
+                    .style("left", document.getElementById("svg-container").clientWidth-70 + "px")
                     .style("position", "absolute");
             }
         }
@@ -740,6 +738,11 @@ class Component1_2 extends Component {
                 actBegEnd = changeBegEnd(data);
                 onclick1Incident = 0;
 
+                d3.select(".fa-search-minus").style("opacity", 0.4);
+                d3.select(".fa-redo").style("opacity", 0.4);
+                d3.select(".fa-chevron-circle-left").style("opacity", 0.4);
+                d3.select(".fa-chevron-circle-right").style("opacity", 0.4);
+
                 d3.select("#root3").style("visibility", "visible");
                 d3.select("#root4").style("visibility", "visible");
                 d3.select("#moreBtn").style("visibility", "hidden");
@@ -762,7 +765,7 @@ class Component1_2 extends Component {
 
         // Button for recovering original viz. 
         let recovery = container.append("button")
-            .text("Obnovit")
+            .text("Zrušit filtr")
             .attr("id", "recoveryBtn")
             .on("click", function () {
                 console.log(ftime)
@@ -885,7 +888,7 @@ class Component1_2 extends Component {
         function zoom(type) {
             let num = 2
             let days = parseInt((actBegEnd.end - actBegEnd.start) / (1000 * 60 * 60 * 24));
-            ZTIME = days *60 *60 *1000 *num; //TODO: debug and change num???
+            ZTIME = days *60 *60 *1000 *num; 
             if (type == "out") {
                 if ((origBegEnd.start <= actBegEnd.start - ZTIME)) {
                     actBegEnd.start = actBegEnd.start - ZTIME;
@@ -904,7 +907,6 @@ class Component1_2 extends Component {
                 }
             }
             else if (type == "in") {
-                //console.log(parseInt((actBegEnd.end - actBegEnd.start)/(1000*60*60)))
                 if (parseInt((actBegEnd.end - actBegEnd.start)/(1000*60*60)) > 25) {
                     actBegEnd.start = actBegEnd.start + ZTIME;
                     d3.select(".fa-search-minus").style("opacity", 1);
@@ -985,7 +987,7 @@ class Component1_2 extends Component {
                 d3.select(".fa-chevron-circle-right").style("opacity", 0.4);
             });
 
-        // opacity of buttons for zooming set to 1 if more than 24 for hours
+        // opacity of buttons for zooming set to 1 if more than 24 hours
         if (parseInt((actBegEnd.end - actBegEnd.start)/(1000*60*60)) > 24) {
             d3.select(".fa-search-plus").style("opacity", 1);
         }
@@ -1029,8 +1031,8 @@ class Component1_2 extends Component {
                             .attr("class", "icon");
                         incidentsWithIcons.push(icon.id);
                         icolor = "black";
-                        if (typeof icon.color != "undefined") {
-                            icolor = icon.color
+                        if (typeof icon.iconColor != "undefined") {
+                            icolor = icon.iconColor;
                         }
                     }
                 })

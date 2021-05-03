@@ -10,15 +10,14 @@ import { ResponsiveLine } from '@nivo/line';
  * Passing JSON as object to component props
  */
 let property = require("./properties/c2_property.json");
-let popup = require("./popup_properties/popup.json");
 let incidents = [];
-incidents.push(require("./incidents/incident7.json"));
 incidents.push(require("./incidents/incident2.json"));
-incidents.push(require("./incidents/incident4.json"));
-incidents.push(require("./incidents/incident6.json"));
 incidents.push(require("./incidents/incident3.json"));
+incidents.push(require("./incidents/incident4.json"));
+incidents.push(require("./incidents/incident5.json"));
+
 let incident = require("./incidents/i3_3.json");
-let description = require("./popup_properties/descr1.json"); 
+let description = require("./properties/descr1.json"); 
 
 /**
  * Gather data for bar chart.

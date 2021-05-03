@@ -7,8 +7,8 @@ export default {
 };
 
 let incidents = [];
-incidents.push(require("../incidents/incident4.json"));
-let description = require("../popup_properties/descr1.json");
+incidents.push(require("../incidents/incident7.json"));
+let description = require("../properties/descr1.json");
 let property = require("../properties/c2_property.json");
 
 const Template = (args) => <Component2 {...args}/>;
