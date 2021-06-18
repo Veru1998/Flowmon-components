@@ -11,13 +11,18 @@ import { ResponsiveLine } from '@nivo/line';
  */
 let property = require("./properties/c2_property.json");
 let incidents = [];
+incidents.push(require("./incidents/incident1.json"));
 incidents.push(require("./incidents/incident2.json"));
 incidents.push(require("./incidents/incident3.json"));
 incidents.push(require("./incidents/incident4.json"));
-incidents.push(require("./incidents/incident5.json"));
+//incidents.push(require("./incidents/incident5.json"));
+incidents.push(require("./incidents/incident7.json"));
 
 let incident = require("./incidents/i3_3.json");
-let description = require("./properties/descr1.json"); 
+let description = require("./properties/descr.json"); 
+
+let start = performance.now();
+//console.log(start);
 
 /**
  * Gather data for bar chart.
@@ -259,7 +264,7 @@ let lineData =
       "data": [
         {
           "x": "20/12",
-          "y": 0
+          "y": 1
         },
         {
           "x": "27/12",
@@ -271,7 +276,7 @@ let lineData =
         },
         {
           "x": "10/01",
-          "y": 0
+          "y": 1
         },
         {
           "x": "17/01",
@@ -313,11 +318,16 @@ ReactDOM.render(<Component3
 />, document.getElementById("root2"));
 
 // render C2 => medium level view
+var a = performance.now();
+console.log(a);
 ReactDOM.render(<Component2 
     property={property} 
     incidents={incidents} 
     description={description} 
 />, document.getElementById("root"));
+var b = performance.now();
+console.log(b);
+console.log(b-a);
 
 // render line chart with history data => top level view
 ReactDOM.render(<ResponsiveLine
@@ -430,3 +440,7 @@ ReactDOM.render(<ResponsiveBar
     motionStiffness={90}
     motionDamping={15}
 />, document.getElementById("root4")); 
+
+let end = performance.now();
+//console.log(end);
+//console.log("Difference:", end-start);

@@ -156,7 +156,7 @@ class Component3 extends Component {
          function showMoreButtons() {
             d3.select(".component3").selectAll("*").remove();
             prev.append("button")
-            .text("Show previous")
+            .text("Previous page")
             .attr("id", "prevBtn")
             .style("visibility", "hidden")
             .on("click", function () {
@@ -188,7 +188,7 @@ class Component3 extends Component {
             }
 
             more.append("button")
-            .text("Show more")
+            .text("Next page")
             .attr("id", "moreBtn")
             .style("visibility", "hidden")
             .on("click", function () {

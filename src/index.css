@@ -64,7 +64,7 @@ path {
 }
 
 #zoomDiv {
-  top: 4.7%;
+  top: 2%;
   left: 45%;
   position: absolute;
 }
@@ -87,19 +87,19 @@ path {
 
 #filter {
   background: rgba(245, 245, 245, 0.95);
-  max-width: 200px;
-  height: 125px;
+  max-width: 180px;
+  height: 140px;
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   color: white;
-  top: 9%;
+  top: 2.5%;
   left: 100px;
   position: absolute;
 }
 
 #filterBtn {
-  top: 5%;
+  top: 2%;
   left: 100px;
   position: absolute;
 }
@@ -109,9 +109,10 @@ path {
   background-color: rgb(238, 238, 238);
 }
 #recoveryBtn {
-  top: 5%;
+  top: 2%;
   left: 150px;
   position: absolute;
+  opacity: 0.4;
 }
 #recoveryBtn1 {
   top: 0;
@@ -133,8 +134,21 @@ path {
 
 #timeSelectBtn {
   margin: 5px;
-  width: 180px;
+  width: 175px;
 }
+#prioritySelectBtn {
+  float: right;
+  height: 87px;
+  margin-left: 35px;
+  margin-top: 5px;
+  width: 60px;
+  text-align: center;
+}
+#prioritySelectBtn::-webkit-scrollbar {display:none;}
+#prioritySelectBtn::-moz-scrollbar {display:none;}
+#prioritySelectBtn::-o-scrollbar {display:none;}
+#prioritySelectBtn::-google-ms-scrollbar {display:none;}
+#prioritySelectBtn::-khtml-scrollbar {display:none;}
 #stateSelectBtn {
   float: left;
   height: 87px;
@@ -147,9 +161,8 @@ path {
 #stateSelectBtn::-google-ms-scrollbar {display:none;}
 #stateSelectBtn::-khtml-scrollbar {display:none;}
 #submitBtn {
-  margin-left: 30px;
-  margin-top: 70px;
-  float: left;
+  margin-left: 70px;
+  margin-top: 5px;
 }
 
 /**
@@ -211,17 +224,17 @@ ul {
 /**
  * Roots for nivo charts styling
  */
-#root3{
+#nivoGraphs {
+  display: flex;
+}
+
+#root3 {
   height: 300px;
-  width: 60%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  flex: 60%;
+  background-color: white;
 }
 #root4 {
   height: 300px;
-  width: 40%;
-  position: fixed;
-  bottom: 0;
-  right: 0;
+  flex: 40%;
+  background-color: white;
 }

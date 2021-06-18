@@ -7,6 +7,9 @@
     "colors":[{
                 "domain": 4,
                 "color":"#ff4133"},
+                {
+                  "domain": 3,
+                  "color":"#68bd33"},
               {
                 "domain": 2,
                 "color":"#ffa733"}],

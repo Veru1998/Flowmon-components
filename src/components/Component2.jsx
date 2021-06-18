@@ -17,6 +17,7 @@ class Component1_2 extends Component {
             resizeData: this.props.incidents,
             resizeFtime: "f0",
             resizeFstate: ["all"],
+            resizeFpriority: ["all"],
             resizeFilter: false,
             resizeClick: false,
             resizeZStart: null,
@@ -34,6 +35,7 @@ class Component1_2 extends Component {
         let resizeData = this.props.incidents;
         let resizeFtime = "f0";
         let resizeFstate = ["all"];
+        let resizeFpriority = ["all"];
         let resizeFilter = false;
         let resizeClick = false;
         let resizeZoom = false;
@@ -44,6 +46,7 @@ class Component1_2 extends Component {
                 resizeData: resizeData,
                 resizeFtime: resizeFtime,
                 resizeFstate: resizeFstate,
+                resizeFpriority: resizeFpriority,
                 resizeFilter: resizeFilter,
                 resizeClick: resizeClick,
                 resizeZStart: resizeZStart,
@@ -89,7 +92,7 @@ class Component1_2 extends Component {
         if (typeof properties.popup != "undefined") {
             popup = properties.popup;
         }
-        if (typeof properties.state_height != "undefined") {
+        if (typeof properties.svg_height != "undefined") {
             height = properties.svg_height;
         }
 
@@ -98,7 +101,7 @@ class Component1_2 extends Component {
          */
         let width = this.state.width; 
         let chart = timelines();
-        $(".component2").css("max-height", height)
+        $(".component2").css("max-height", height);
         let svg = d3.select(this.ref1.current)
             .append("svg")
             .attr("id", "svg-container")
@@ -111,7 +114,8 @@ class Component1_2 extends Component {
         
         let div = container.append("div")
             .attr("id", "popup")
-            .style("opacity", 0);
+            .style("opacity", 0)
+            .style("z-index", 1);
 
         let dashboardWindow = d3.select("#window");
 
@@ -314,7 +318,7 @@ class Component1_2 extends Component {
          */
         function createChart(beg, end) {
             let ch = timelines().rotateTicks(35)
-            .margin({left: left, right: 30, top: 40, bottom: 0})
+            .margin({left: left, right: 30, top: 80, bottom: 0})
             .itemHeight(stateHeight)
             .colors(colorScale)
             .beginning(beg)
@@ -535,30 +539,52 @@ class Component1_2 extends Component {
          * @param {String} ftime - Selected time from to.
          * @param {Array} fstate - Selected states which should be viz.
          */
-        function update(d, ftime, fstate) {
+        function update(d, ftime, fstate, fpriority) {
             let timeAlert = false;
             let stateAlert = false;
             let chart;
             let result = true;
             let newData = [];
+            let dataViz = [];
             let count = 0;
+            let countP = 0;
             resizeFtime = ftime;
             resizeFstate = fstate;
+            resizeFpriority = fpriority;
             origData.forEach(d => {
                 if (fstate.includes(d.times[d.times.length - 1].status)) {
                     newData.push(d);
                     count++;
                 }
             });
+            if (count == 0) 
+                newData = origData.slice();
+
+            newData.forEach(d => {
+                if (fpriority.includes((d.times[d.times.length - 1].priority).toString())) {
+                    dataViz.push(d);
+                    countP++;
+                }
+            });
+            if (countP > 0)
+                newData = dataViz.slice();
             
-            if ((count == 0) && (fstate.includes("all") == false)) {
+            if ((count > 0) && (countP == 0) && (fpriority.includes("all") == false))
+                stateAlert = true;
+            if ((countP > 0) && (count == 0) && (fstate.includes("all") == false))
+                stateAlert = true;
+            if ((count == 0) && (fstate.includes("all") == false) && ((countP == 0) && (fpriority.includes("all") == true)))
+                stateAlert = true;
+            if ((countP == 0) && (fpriority.includes("all") == false) && (count == 0) && (fstate.includes("all") == true))
+                stateAlert = true;
+
+
+            if (((count == 0) && (fstate.includes("all") == false)) && ((countP == 0) && (fpriority.includes("all") == false))) {
                 data = d;
                 stateAlert = true;
             }
-            else if ((fstate.includes("all") == false))
-                data = newData;
             else 
-                data = origData.slice();
+                data = newData;
             let BegEnd = changeBegEnd(data);
             actBegEnd = BegEnd;
             switch (ftime) {
@@ -609,15 +635,20 @@ class Component1_2 extends Component {
             if  ((stateAlert == true) && (timeAlert == false)) {
                 filterAlert(1);
                 result = false;
+                data = d;
                 chart = createChart(start_date, end_date);
             }
             else if ((stateAlert == true) && (timeAlert == true)) {
                 filterAlert(0);
                 result = false;
+                data = d;
+                chart = createChart(start_date, end_date);
             }
             else if ((stateAlert == false) && (timeAlert == true)) {
                 filterAlert(0);
                 result = false;
+                data = d;
+                chart = createChart(start_date, end_date);
             }
             
             // dont show incident when there is no data for viz time
@@ -674,7 +705,7 @@ class Component1_2 extends Component {
                 let y = svg.select(where).attr("y");
                 d3.select("#iconDiv"+id)
                     .style("top", (parseInt(y) + 2) + "px")
-                    .style("left", document.getElementById("svg-container").clientWidth-70 + "px")
+                    .style("left", document.getElementById("svg-container").clientWidth-60 + "px")
                     .style("position", "absolute");
             }
         }
@@ -703,6 +734,7 @@ class Component1_2 extends Component {
         let filtering = false;
         let ftime;
         let fstate = [];
+        let fpriority = [];
         container.append("button")
             .attr("id", "filterBtn")
             .text("Filtr")
@@ -728,7 +760,7 @@ class Component1_2 extends Component {
             .on("click", function() {
                 data = onclickData;
                 let x = changeBegEnd(data);
-                svg.attr("height", height);
+                svg.attr("height", containerHeight);
                 svg.attr("width", width);
                 let ch = createChart(x.start, x.end);
                 redrawChart(ch);
@@ -761,6 +793,8 @@ class Component1_2 extends Component {
                 d3.select("#filterBtn").style("opacity", 1);
                 if (filtering == true) 
                     d3.select("#recoveryBtn").style("opacity", 1);
+                else 
+                d3.select("#recoveryBtn").style("opacity", 0);
             });
 
         // Button for recovering original viz. 
@@ -768,19 +802,16 @@ class Component1_2 extends Component {
             .text("Zrušit filtr")
             .attr("id", "recoveryBtn")
             .on("click", function () {
-                console.log(ftime)
                 ftime = "f0";
                 fstate = ["all"];
-                console.log(ftime)
-                console.log(data)
                 let ch = createChart(start_date, end_date);
                 data = origData;
-                console.log(data)
                 redrawChart(ch);
                 filtering = false;
                 resizeFilter = filtering;
                 resizeFtime = ftime;
                 resizeFstate = fstate;
+                resizeFpriority = fpriority;
                 resizeData = origData;
                 origBegEnd = changeBegEnd(data);
                 actBegEnd = changeBegEnd(data);
@@ -793,6 +824,7 @@ class Component1_2 extends Component {
                     createIconDiv(e);
                 })
             })
+
 
         if (filtering == false) 
             recovery.style("opacity", 0);
@@ -842,6 +874,27 @@ class Component1_2 extends Component {
             .text("Re-opened")
             .attr("value", "reopened") 
 
+        let prioritySelect = d3.select("#filter")
+            .append("select")
+            .attr("multiple", true)
+            .attr("id", "prioritySelectBtn");
+        prioritySelect.append("option")
+            .text("Všechny")
+            .attr("value", "all")
+            .attr("selected", true)
+        prioritySelect.append("option")
+            .text("1")
+            .attr("value", "1")
+        prioritySelect.append("option")
+            .text("2")
+            .attr("value", "2")
+        prioritySelect.append("option")
+            .text("3")
+            .attr("value", "3")
+        prioritySelect.append("option")
+            .text("4")
+            .attr("value", "4")
+
         // After submitting call function update
         let submit = d3.select("#filter")
             .append("button")
@@ -868,6 +921,18 @@ class Component1_2 extends Component {
                                 fstate.splice(fstate.indexOf(this.value), 1);
                         }
                     });
+                d3.select("#prioritySelectBtn")
+                    .selectAll("option")
+                    .filter(function() {
+                        if (this.selected == true) {
+                            if (!(fpriority.includes(this.value)))
+                                fpriority.push(this.value);
+                        }
+                        else {
+                            if (fpriority.indexOf(this.value) != -1)
+                                fpriority.splice(fpriority.indexOf(this.value), 1);
+                        }
+                    });
                 d3.select("#timeSelectBtn")
                     .selectAll("option")
                     .filter(function () {
@@ -876,7 +941,7 @@ class Component1_2 extends Component {
                         }
                     });
 
-                if (update(data, ftime, fstate) == false) {
+                if (update(data, ftime, fstate, fpriority) == false) {
                     recovery.style("opacity", 0);
                 }
             });
@@ -890,12 +955,10 @@ class Component1_2 extends Component {
             let days = parseInt((actBegEnd.end - actBegEnd.start) / (1000 * 60 * 60 * 24));
             ZTIME = days *60 *60 *1000 *num; 
             if (type == "out") {
-                if ((origBegEnd.start <= actBegEnd.start - ZTIME)) {
+                if ((origBegEnd.start <= actBegEnd.start - ZTIME) && (origBegEnd.end >= actBegEnd.end + ZTIME)) {
                     actBegEnd.start = actBegEnd.start - ZTIME;
-                    d3.select(".fa-search-plus").style("opacity", 1);
-                }
-                else if (origBegEnd.end >= actBegEnd.end + ZTIME) {
                     actBegEnd.end = actBegEnd.end + ZTIME;
+                    d3.select(".fa-search-plus").style("opacity", 1);
                 }
                 if ((origBegEnd.start > actBegEnd.start - ZTIME) && (origBegEnd.end < actBegEnd.end + ZTIME)) {
                     d3.select(".fa-search-minus").style("opacity", 0.4);
@@ -905,12 +968,17 @@ class Component1_2 extends Component {
                 if (origBegEnd.start > actBegEnd.start) {
                     d3.select(".fa-chevron-circle-left").style("opacity", 0.4);
                 }
+                if (origBegEnd.end < actBegEnd.end) {
+                    d3.select(".fa-chevron-circle-right").style("opacity", 0.4);
+                }
             }
             else if (type == "in") {
                 if (parseInt((actBegEnd.end - actBegEnd.start)/(1000*60*60)) > 25) {
                     actBegEnd.start = actBegEnd.start + ZTIME;
+                    actBegEnd.end = actBegEnd.end - ZTIME;
                     d3.select(".fa-search-minus").style("opacity", 1);
                     d3.select(".fa-chevron-circle-left").style("opacity", 1);
+                    d3.select(".fa-chevron-circle-right").style("opacity", 1);
                     d3.select(".fa-redo").style("opacity", 1);
                 }
                 if (parseInt((actBegEnd.end - actBegEnd.start)/(1000*60*60)) <= 25) {
@@ -941,7 +1009,7 @@ class Component1_2 extends Component {
         let moveLeft = zoomDiv.append("span")
             .attr("class", "fas fa-chevron-circle-left zoom-icons")
             .on("click", function () {
-                if ((origBegEnd.start < actBegEnd.start - ZTIME) && (origBegEnd.end > actBegEnd.end - ZTIME)) {
+                if ((origBegEnd.start < actBegEnd.start - ZTIME + 5) && (origBegEnd.end > actBegEnd.end - ZTIME + 5)) {
                     actBegEnd.start = actBegEnd.start - ZTIME;
                     actBegEnd.end = actBegEnd.end - ZTIME;
                     d3.select(".fa-chevron-circle-right").style("opacity", 1);
@@ -994,7 +1062,7 @@ class Component1_2 extends Component {
         else {
             d3.select(".fa-search-plus").style("opacity", 0.4);
         }
-
+        
         /**
          * Drawing chart to defined svg. 
          */
@@ -1006,6 +1074,15 @@ class Component1_2 extends Component {
         svg.selectAll("rect")
             .style("stroke", "black")
             .style("stroke-width", "0.2px");
+
+        let containerHeight = 140;
+        let svgHeight = height;
+        containerHeight += $(".container")[0].getBBox().height;
+        if (containerHeight > svgHeight) {
+            svg.attr("height", containerHeight);
+            $(".component2").css("max-height", containerHeight)
+            height = containerHeight
+        }
 
         /**
          * Adding icons if defined.
@@ -1082,7 +1159,7 @@ class Component1_2 extends Component {
             recovery.style("opacity", 1);
             filtering = true;
             resizeFilter = filtering;
-            if (update(data, this.state.resizeFtime, this.state.resizeFstate) == false) {
+            if (update(data, this.state.resizeFtime, this.state.resizeFstate, this.state.resizeFpriority) == false) {
                 recovery.style("opacity", 0);
             }
         }
